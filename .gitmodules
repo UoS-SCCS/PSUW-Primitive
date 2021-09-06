@@ -1,0 +1,3 @@
+[submodule "webauthn-recovery-extension"]
+	path = arkg
+	url = git@github.com:Yubico/webauthn-recovery-extension.git

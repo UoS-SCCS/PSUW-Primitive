@@ -35,7 +35,7 @@ def pkgen(pp):
 def delegate(pp, skd, pkp):
     pkw, cred = ARKG.derive_pk(pkp, b'')
     sigma = list(DS.sign(encode_key(pkw), skd))
-    sigma[1] = ARKG.P256.q-sigma[1] if sigma[1] >= (ARKG.P256.q-1)/2 else sigma[1]
+    sigma[1] = ARKG.P256.q-sigma[1] if sigma[1] > (ARKG.P256.q-1)/2 else sigma[1]
     return Delegation([pkw, sigma], cred)
 
 def psign(pp, skp, pkd, warr, ddata, m):
@@ -44,14 +44,14 @@ def psign(pp, skp, pkd, warr, ddata, m):
     assert DS.verify(sigma, encode_key(pkw), pkd)
     skw = ARKG.derive_sk(skp, cred)  # No need to assert, exception thrown if invalid.
     sig = list(DS.sign(m, skw))
-    sig[1] = ARKG.P256.q-sig[1] if sig[1] >= (ARKG.P256.q-1)/2 else sig[1]
+    sig[1] = ARKG.P256.q-sig[1] if sig[1] > (ARKG.P256.q-1)/2 else sig[1]
     return ProxySignature(sig, warr)
 
 def pverify(pp, pkd, psig, m):
     sig, warr = psig
     pkw, sigma = warr
-    assert sigma[1] < (ARKG.P256.q-1)/2
-    assert sig[1] < (ARKG.P256.q-1)/2
+    assert sigma[1] <= (ARKG.P256.q-1)/2
+    assert sig[1] <= (ARKG.P256.q-1)/2
     return DS.verify(sigma, encode_key(pkw), pkd) and DS.verify(sig, m, pkw)
 
 if __name__ == '__main__':
